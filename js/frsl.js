@@ -29,7 +29,14 @@ document.addEventListener('DOMContentLoaded', function() {
             params.id = params.id.replace(/\+/g,' ');
         }
         try {
-            if (!formRenderSkipLogic.formsAccess[params.id][params.event_id][params.page]) {
+            
+            var instance = 1;
+
+            if(params.instance) {
+                var instance = params.instance;
+            }
+
+            if (!formRenderSkipLogic.formsAccess[params.id][params.event_id][params.page][instance]) {
                 disableForm(this);
             }
         } catch (err) {

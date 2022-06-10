@@ -308,7 +308,17 @@ class ExternalModule extends AbstractExternalModule {
                         // Getting 1st operand for default mode.
                         $source_event = empty($control['event']) ? $event_id : $control['event'];
 
-                        if (isset($data[$source_event][$control['field']])) {
+                        // Check repeat instances
+                        if (isset($data['repeat_instances']))
+                        {
+                            foreach($data['repeat_instances'] as $instance_num => $instance)
+                            {
+                                if (isset($instance[$source_event][''][$instance_num][$control['field']])) {
+                                    $controls[$i]['value'][$instance_num] = $instance[$source_event][''][$instance_num][$control['field']];
+                                }
+                            }
+                        }
+                        else (isset($data[$source_event][$control['field']])) {
                             $controls[$i]['value'] = $data[$source_event][$control['field']];
                         }
                     }
@@ -357,14 +367,26 @@ class ExternalModule extends AbstractExternalModule {
                         $access = false;
 
                         foreach ($target_forms[$event_id][$form] as $cond) {
-                            if ($this->_calculateCondition($controls[$cond['a']]['value'], $cond['b'], $cond['op'])) {
+
+                            if (is_array($controls[$cond['a']]['value'])) // Repeat events
+                            {
+                                foreach($controls[$cond['a']]['value'] as $i => $instance_val) {
+                                    if ($this->_calculateCondition($instance_val, $cond['b'], $cond['op'])) {
+                                        $instance_num = $i; 
+                                        $access = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            else if ($this->_calculateCondition($controls[$cond['a']]['value'], $cond['b'], $cond['op'])) {
+                                $instance_num = 1;
                                 $access = true;
                                 break;
                             }
                         }
                     }
 
-                    $forms_access[$id][$event_id][$form] = $access;
+                    $forms_access[$id][$event_id][$form][$instance_num] = $access;
                 }
             }
         }

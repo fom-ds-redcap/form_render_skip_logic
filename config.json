@@ -61,7 +61,7 @@
                 },
                 {
                     "key": "control_event_id",
-                    "name": "Field",
+                    "name": "Event",
                     "type": "event-list"
                 },
                 {
