@@ -363,6 +363,8 @@ class ExternalModule extends AbstractExternalModule {
                 foreach ($forms as $form) {
                     $access = true;
 
+                    $instance_num = 1;
+
                     if (isset($target_forms[$event_id][$form])) {
                         $access = false;
 
@@ -379,7 +381,6 @@ class ExternalModule extends AbstractExternalModule {
                                 }
                             }
                             else if ($this->_calculateCondition($controls[$cond['a']]['value'], $cond['b'], $cond['op'])) {
-                                $instance_num = 1;
                                 $access = true;
                                 break;
                             }
