@@ -259,7 +259,7 @@ class ExternalModule extends AbstractExternalModule {
         }
 
         // Fetch only relevant data if a DAG is being used
-        if ($dag = $_GET['dag']) {
+        if ($dag == $_GET['dag']) {
             $record_list = Records::getRecordListSingleDag($Proj->project_id, $dag);
         } else {
            $record_list = $record;
@@ -318,7 +318,7 @@ class ExternalModule extends AbstractExternalModule {
                                 }
                             }
                         }
-                        else (isset($data[$source_event][$control['field']])) {
+                        else if (isset($data[$source_event][$control['field']])) {
                             $controls[$i]['value'] = $data[$source_event][$control['field']];
                         }
                     }
