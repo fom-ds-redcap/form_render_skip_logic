@@ -311,9 +311,9 @@ class ExternalModule extends AbstractExternalModule {
                         // Check repeat instances
                         if (isset($data['repeat_instances']))
                         {
-                            foreach($data['repeat_instances'] as $instance_num => $instance)
+                            foreach($data['repeat_instances'][$source_event][''] as $instance_num => $instance)
                             {
-                                if (isset($instance[$source_event][''][$instance_num][$control['field']])) {
+                                if (isset($instance[$control['field']])) {
                                     $controls[$i]['value'][$instance_num] = $instance[$source_event][''][$instance_num][$control['field']];
                                 }
                             }
