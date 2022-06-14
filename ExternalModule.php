@@ -361,12 +361,9 @@ class ExternalModule extends AbstractExternalModule {
                 }
 
                 foreach ($forms as $form) {
-                    $access = true;
-
                     $instance_num = 1;
 
                     if (isset($target_forms[$event_id][$form])) {
-                        $access = false;
 
                         foreach ($target_forms[$event_id][$form] as $cond) {
 
@@ -374,20 +371,23 @@ class ExternalModule extends AbstractExternalModule {
                             {
                                 foreach($controls[$cond['a']]['value'] as $i => $instance_val) {
                                     if ($this->_calculateCondition($instance_val, $cond['b'], $cond['op'])) {
-                                        $instance_num = $i; 
-                                        $access = true;
-                                        break;
+                                        $instance_num = $i;
+                                        $forms_access[$id][$event_id][$form][$instance_num] = true;
+                                    }
+                                    else {
+                                        $forms_access[$id][$event_id][$form][$instance_num] = false;
                                     }
                                 }
                             }
                             else if ($this->_calculateCondition($controls[$cond['a']]['value'], $cond['b'], $cond['op'])) {
-                                $access = true;
+                                $forms_access[$id][$event_id][$form][$instance_num] = true;
                                 break;
                             }
                         }
                     }
-
-                    $forms_access[$id][$event_id][$form][$instance_num] = $access;
+                    else {
+                        $forms_access[$id][$event_id][$form][$instance_num] = true;
+                    }     
                 }
             }
         }
