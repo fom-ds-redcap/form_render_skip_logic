@@ -314,7 +314,7 @@ class ExternalModule extends AbstractExternalModule {
                             foreach($data['repeat_instances'][$source_event][''] as $instance_num => $instance)
                             {
                                 if (isset($instance[$control['field']])) {
-                                    $controls[$i]['value'][$instance_num] = $instance[$source_event][''][$instance_num][$control['field']];
+                                    $controls[$i]['value'][$instance_num] = $instance[$control['field']];
                                 }
                             }
                         }
