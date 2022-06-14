@@ -337,7 +337,7 @@ class ExternalModule extends AbstractExternalModule {
                         $logic = Calculate::formatCalcToPHP($logic, $Proj);
                         $logic = LogicTester::logicPrependEventName($logic, $events_names[$event_id], $Proj = $Proj);
 
-                        if (isset($data['repeat_instances'])) {
+                        if (isset($data['repeat_instances'][$event_id])) {
                             foreach($data['repeat_instances'][$event_id][''] as $instance_num => $instance) {
                                 $instance_data[$event_id] = $instance + array($fake_field => '');
                                 $controls[$i]['value'][$instance_num] = (string) LogicTester::evaluateCondition($logic, $instance_data);
@@ -374,7 +374,7 @@ class ExternalModule extends AbstractExternalModule {
                             {
                                 foreach($controls[$cond['a']]['value'] as $i => $instance_val) {
                                     $instance_num = $i;
-                                    if (!isset($forms_access[$id][$event_id][$form][$instance_num])) {
+                                    if (!$forms_access[$id][$event_id][$form][$instance_num]) {
                                         if ($this->_calculateCondition($instance_val, $cond['b'], $cond['op'])) {
                                             $forms_access[$id][$event_id][$form][$instance_num] = true;
                                         }
@@ -392,10 +392,11 @@ class ExternalModule extends AbstractExternalModule {
                     }
                     else if (!isset($forms_access[$id][$event_id][$form])){
                         $forms_access[$id][$event_id][$form]['all'] = true;
-                    }     
+                    }
                 }
             }
         }
+
 
         self::$accessMatrix = $forms_access;
         return $forms_access;
