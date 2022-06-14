@@ -310,7 +310,7 @@ class ExternalModule extends AbstractExternalModule {
                         $source_event = empty($control['event']) ? $event_id : $control['event'];
 
                         // Check repeat instances
-                        if (isset($data['repeat_instances']))
+                        if (isset($data['repeat_instances'][$source_event]))
                         {
                             foreach($data['repeat_instances'][$source_event][''] as $instance_num => $instance)
                             {
@@ -337,7 +337,7 @@ class ExternalModule extends AbstractExternalModule {
                         $logic = Calculate::formatCalcToPHP($logic, $Proj);
                         $logic = LogicTester::logicPrependEventName($logic, $events_names[$event_id], $Proj = $Proj);
 
-                        if (isset($data['repeat_instances'])) {
+                        if (isset($data['repeat_instances'][$event_id])) {
                             foreach($data['repeat_instances'][$event_id][''] as $instance_num => $instance) {
                                 $instance_data[$event_id] = $instance + array($fake_field => '');
                                 $controls[$i]['value'][$instance_num] = (string) LogicTester::evaluateCondition($logic, $instance_data);
@@ -374,7 +374,7 @@ class ExternalModule extends AbstractExternalModule {
                             {
                                 foreach($controls[$cond['a']]['value'] as $i => $instance_val) {
                                     $instance_num = $i;
-                                    if (!isset($forms_access[$id][$event_id][$form][$instance_num])) {
+                                    if (!$forms_access[$id][$event_id][$form][$instance_num]) {
                                         if ($this->_calculateCondition($instance_val, $cond['b'], $cond['op'])) {
                                             $forms_access[$id][$event_id][$form][$instance_num] = true;
                                         }
