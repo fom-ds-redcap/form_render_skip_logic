@@ -370,8 +370,8 @@ class ExternalModule extends AbstractExternalModule {
                             if (is_array($controls[$cond['a']]['value'])) // Repeat events
                             {
                                 foreach($controls[$cond['a']]['value'] as $i => $instance_val) {
+                                    $instance_num = $i;
                                     if ($this->_calculateCondition($instance_val, $cond['b'], $cond['op'])) {
-                                        $instance_num = $i;
                                         $forms_access[$id][$event_id][$form][$instance_num] = true;
                                     }
                                     else {
