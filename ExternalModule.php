@@ -349,20 +349,9 @@ class ExternalModule extends AbstractExternalModule {
                 $forms = $Proj->eventsForms[$event_id];
 
                 if ($prevent_hidden_data && !empty($forms_status)) {
-                    $forms = array();
-
                     foreach ($forms_status[$id][$event_id] as $form => $instances) {
-                        if (empty($instances)) {
-                            $forms[] = $form;
-                        }
-                        else {
-                            foreach($instances as $instance_num => $instance) {
-                                $forms_access[$id][$event_id][$form][$instance_num] = true;
-                            }
-
-                            if (sizeof($instances) > 1) {
-                                $forms[] = $form;
-                            }
+                        foreach($instances as $instance_num => $instance) {
+                            $forms_access[$id][$event_id][$form][$instance_num] = true;
                         }
                     }
                 }
@@ -393,7 +382,7 @@ class ExternalModule extends AbstractExternalModule {
                             }
                         }
                     }
-                    else {
+                    else if (!isset($forms_access[$id][$event_id][$form])){
                         $forms_access[$id][$event_id][$form]['all'] = true;
                     }     
                 }
