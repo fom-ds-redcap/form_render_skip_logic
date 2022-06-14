@@ -174,7 +174,8 @@ class ExternalModule extends AbstractExternalModule {
      *   The forms access matrix. The array is keyed as follows:
      *   - record ID
      *   -- event ID
-     *   --- instrument name: TRUE/FALSE
+     *   --- instrument name
+     *   ---- instance num/'all': TRUE/FALSE
      */
     function getFormsAccessMatrix($event_id = null, $record = null) {
         if (isset(self::$accessMatrix)) {
@@ -355,7 +356,9 @@ class ExternalModule extends AbstractExternalModule {
                             $forms[] = $form;
                         }
                         else {
-                            $forms_access[$id][$event_id][$form] = true;
+                            foreach($instances as $instance_num => $instance) {
+                                $forms_access[$id][$event_id][$form][$instance_num] = true;
+                            }
                         }
                     }
                 }
