@@ -310,7 +310,7 @@ class ExternalModule extends AbstractExternalModule {
                         $source_event = empty($control['event']) ? $event_id : $control['event'];
 
                         // Check repeat instances
-                        if (isset($data['repeat_instances']))
+                        if (isset($data['repeat_instances'][$source_event]))
                         {
                             foreach($data['repeat_instances'][$source_event][''] as $instance_num => $instance)
                             {
