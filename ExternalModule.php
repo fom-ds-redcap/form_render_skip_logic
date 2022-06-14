@@ -361,9 +361,9 @@ class ExternalModule extends AbstractExternalModule {
                 }
 
                 foreach ($forms as $form) {
-                    $instance_num = 1;
 
                     if (isset($target_forms[$event_id][$form])) {
+                        $instance_num = 1;
 
                         foreach ($target_forms[$event_id][$form] as $cond) {
 
@@ -386,7 +386,7 @@ class ExternalModule extends AbstractExternalModule {
                         }
                     }
                     else {
-                        $forms_access[$id][$event_id][$form][$instance_num] = true;
+                        $forms_access[$id][$event_id][$form]["all"] = true;
                     }     
                 }
             }
