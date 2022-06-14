@@ -386,7 +386,7 @@ class ExternalModule extends AbstractExternalModule {
                         }
                     }
                     else {
-                        $forms_access[$id][$event_id][$form]["all"] = true;
+                        $forms_access[$id][$event_id][$form]['all'] = true;
                     }     
                 }
             }
