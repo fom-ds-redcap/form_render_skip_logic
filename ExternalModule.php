@@ -388,9 +388,12 @@ class ExternalModule extends AbstractExternalModule {
                                 $forms_access[$id][$event_id][$form][$instance_num] = true;
                                 break;
                             }
+                            else {
+                                $forms_access[$id][$event_id][$form][$instance_num] = false;
+                            }
                         }
                     }
-                    else if (!isset($forms_access[$id][$event_id][$form])){
+                    else if (!isset($forms_access[$id][$event_id][$form])) {
                         $forms_access[$id][$event_id][$form]['all'] = true;
                     }
                 }

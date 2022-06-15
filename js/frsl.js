@@ -36,7 +36,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 var instance = params.instance;
             }
 
-            if (!formRenderSkipLogic.formsAccess[params.id][params.event_id][params.page][instance] && !formRenderSkipLogic.formsAccess[params.id][params.event_id][params.page]['all']) {
+            if (!formRenderSkipLogic.formsAccess[params.id][params.event_id][params.page][instance] && 
+                !formRenderSkipLogic.formsAccess[params.id][params.event_id][params.page]['all']) {
                 disableForm(this);
             }
         } catch (err) {
