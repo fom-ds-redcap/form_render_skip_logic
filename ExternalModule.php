@@ -365,37 +365,36 @@ class ExternalModule extends AbstractExternalModule {
                 }
 
                 foreach ($forms as $form) {
+                    $key = 'all';
+                    $access = false; 
+
                     if (isset($target_forms[$event_id][$form])) {
-                        $instance_num = 1;
+                        $key = 1;
 
                         foreach ($target_forms[$event_id][$form] as $cond) {
 
                             if (is_array($controls[$cond['a']]['value'])) // Repeat events
                             {
                                 foreach($controls[$cond['a']]['value'] as $i => $instance_val) {
-                                    $instance_num = $i;
-                                    if (!$forms_access[$id][$event_id][$form][$instance_num]) {
+                                    $key = $i;
+                                    if (!$forms_access[$id][$event_id][$form][$key]) {
                                         if ($this->_calculateCondition($instance_val, $cond['b'], $cond['op'])) {
-                                            $forms_access[$id][$event_id][$form][$instance_num] = true;
-                                        }
-                                        else {
-                                            $forms_access[$id][$event_id][$form][$instance_num] = false;
+                                            $access = true;
                                         }
                                     }
                                 }
                             }
                             else if ($this->_calculateCondition($controls[$cond['a']]['value'], $cond['b'], $cond['op'])) {
-                                $forms_access[$id][$event_id][$form][$instance_num] = true;
+                                $access = true;
                                 break;
-                            }
-                            else {
-                                $forms_access[$id][$event_id][$form][$instance_num] = false;
                             }
                         }
                     }
                     else if (!isset($forms_access[$id][$event_id][$form])) {
-                        $forms_access[$id][$event_id][$form]['all'] = true;
+                        $access = true;
                     }
+
+                    $forms_access[$id][$event_id][$form][$key] = $access;
                 }
             }
         }
