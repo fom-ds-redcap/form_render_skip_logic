@@ -366,7 +366,7 @@ class ExternalModule extends AbstractExternalModule {
 
                 foreach ($forms as $form) {
                     $key = 'all';
-                    $access = false; 
+                    $access = true;
 
                     if (isset($target_forms[$event_id][$form])) {
                         $key = 1;
@@ -377,24 +377,27 @@ class ExternalModule extends AbstractExternalModule {
                             {
                                 foreach($controls[$cond['a']]['value'] as $i => $instance_val) {
                                     $key = $i;
-                                    if (!$forms_access[$id][$event_id][$form][$key]) {
-                                        if ($this->_calculateCondition($instance_val, $cond['b'], $cond['op'])) {
-                                            $access = true;
-                                        }
+                                    $access = false;
+
+                                    if ($forms_access[$id][$event_id][$form][$key]) {
+                                        continue;
                                     }
+
+                                    if ($this->_calculateCondition($instance_val, $cond['b'], $cond['op'])) {
+                                        $access = true;
+                                    }
+                                    $forms_access[$id][$event_id][$form][$key] = $access;
                                 }
                             }
                             else if ($this->_calculateCondition($controls[$cond['a']]['value'], $cond['b'], $cond['op'])) {
-                                $access = true;
+                                $forms_access[$id][$event_id][$form][$key] = $access;
                                 break;
                             }
                         }
                     }
                     else if (!isset($forms_access[$id][$event_id][$form])) {
-                        $access = true;
+                        $forms_access[$id][$event_id][$form][$key] = $access;
                     }
-
-                    $forms_access[$id][$event_id][$form][$key] = $access;
                 }
             }
         }
