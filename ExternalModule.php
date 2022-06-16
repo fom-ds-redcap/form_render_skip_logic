@@ -338,9 +338,9 @@ class ExternalModule extends AbstractExternalModule {
                         $logic = LogicTester::logicPrependEventName($logic, $events_names[$event_id], $Proj = $Proj);
 
                         if (isset($data['repeat_instances'][$event_id])) {
-                            foreach($data as $e_id => $event_data) {
-                                if ($e_id != 'repeat_instances') {
-                                    $instance_data[$e_id] = $event_data;
+                            foreach($data as $i => $event_data) {
+                                if ($i != 'repeat_instances') {
+                                    $instance_data[$i] = $event_data;
                                 }
                             }
 
@@ -355,18 +355,20 @@ class ExternalModule extends AbstractExternalModule {
                             }
                             $data[$event_id] += array($fake_field => '');
 
-                            if (isset($data['repeat_instances'][$event_id])) {
-                                foreach($data as $e_id => $event_data) {
-                                    if ($e_id != 'repeat_instances') {
-                                        $instance_data[$e_id] = $event_data;
+                            if (isset($data['repeat_instances'])) {
+                                foreach($data as $i => $event_data) {
+                                    if ($i != 'repeat_instances') {
+                                        $instance_data[$i] = $event_data;
                                     }
                                 }
 
-                                foreach($data['repeat_instances'][$event_id][''] as $instance_num => $instance) {
-                                    $instance_data[$event_id] = $instance + array($fake_field => '');
-                                    $value = (string) LogicTester::evaluateCondition($logic, $instance_data);
-                                    if (!empty($value)) {
-                                        break;
+                                foreach($data['repeat_instances'] as $curr_event_id => $instances) {
+                                    foreach($instances[''] as $instance_num => $instance) {
+                                        $instance_data[$curr_event_id] = $instance + array($fake_field => '');
+                                        $value = (string) LogicTester::evaluateCondition($logic, $instance_data);
+                                        if ($value !== '') {
+                                            break;
+                                        }
                                     }
                                 }
                             }
