@@ -338,6 +338,12 @@ class ExternalModule extends AbstractExternalModule {
                         $logic = LogicTester::logicPrependEventName($logic, $events_names[$event_id], $Proj = $Proj);
 
                         if (isset($data['repeat_instances'][$event_id])) {
+                            foreach($data as $e_id => $event_data) {
+                                if ($e_id != 'repeat_instances') {
+                                    $instance_data[$e_id] = $event_data;
+                                }
+                            }
+
                             foreach($data['repeat_instances'][$event_id][''] as $instance_num => $instance) {
                                 $instance_data[$event_id] = $instance + array($fake_field => '');
                                 $controls[$i]['value'][$instance_num] = (string) LogicTester::evaluateCondition($logic, $instance_data);
@@ -347,9 +353,24 @@ class ExternalModule extends AbstractExternalModule {
                             if (empty($data[$event_id])) {
                                 $data[$event_id] = array();
                             }
-
                             $data[$event_id] += array($fake_field => '');
-                            $controls[$i]['value'] = (string) LogicTester::evaluateCondition($logic, $data);
+
+                            if (isset($data['repeat_instances'][$event_id])) {
+                                foreach($data as $e_id => $event_data) {
+                                    if ($e_id != 'repeat_instances') {
+                                        $instance_data[$e_id] = $event_data;
+                                    }
+                                }
+
+                                foreach($data['repeat_instances'][$event_id][''] as $instance_num => $instance) {
+                                    $instance_data[$event_id] = $instance + array($fake_field => '');
+                                    $value = (string) LogicTester::evaluateCondition($logic, $instance_data);
+                                    if (!empty($value)) {
+                                        break;
+                                    }
+                                }
+                            }
+                            $controls[$i]['value'] = $value;
                         }
                     }
                 }
