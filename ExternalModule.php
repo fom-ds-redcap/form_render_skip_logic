@@ -414,6 +414,10 @@ class ExternalModule extends AbstractExternalModule {
                                 $forms_access[$id][$event_id][$form][$key] = $access;
                                 break;
                             }
+                            else {
+                                $access = false; 
+                                $forms_access[$id][$event_id][$form][$key] = $access;
+                            }
                         }
                     }
                     else if (!isset($forms_access[$id][$event_id][$form])) {
