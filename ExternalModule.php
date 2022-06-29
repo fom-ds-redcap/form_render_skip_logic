@@ -350,7 +350,8 @@ class ExternalModule extends AbstractExternalModule {
                                 $instance_data[$event_id] = $instance + array($fake_field => '');
                                 foreach($data['repeat_instances'] as $repeat_event_id => $instances) {
                                     if ($repeat_event_id != $event_id) {
-                                        foreach($instances[''] as $instance_num_2 => $instance_2) {
+                                        // Second loop in case data for branching logic is on other repeat events
+                                        foreach($instances[''] as $instance_num_2 => $instance_2) { 
                                             $instance_data[$repeat_event_id] = $instance_2 + array($fake_field => '');
                                             $value = (string) LogicTester::evaluateCondition($logic, $instance_data);
                                             if (!empty($value)) {
