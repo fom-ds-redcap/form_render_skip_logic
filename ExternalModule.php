@@ -348,7 +348,18 @@ class ExternalModule extends AbstractExternalModule {
 
                             foreach($data['repeat_instances'][$event_id][''] as $instance_num => $instance) {
                                 $instance_data[$event_id] = $instance + array($fake_field => '');
-                                $controls[$i]['value'][$instance_num] = (string) LogicTester::evaluateCondition($logic, $instance_data);
+                                foreach($data['repeat_instances'] as $repeat_event_id => $instances) {
+                                    if ($repeat_event_id != $event_id) {
+                                        foreach($instances[''] as $instance_num => $instance) {
+                                            $instance_data[$repeat_event_id] = $instance + array($fake_field => '');
+                                            $value = (string) LogicTester::evaluateCondition($logic, $instance_data);
+                                            if (!empty($value)) {
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                                $controls[$i]['value'][$instance_num] = $value;
                             }
                         }
                         else {
