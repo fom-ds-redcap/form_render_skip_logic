@@ -339,9 +339,10 @@ class ExternalModule extends AbstractExternalModule {
 
                         if (isset($data['repeat_instances'][$event_id])) {
                             // Retrieve values for each instance of the event
-                            foreach($data as $i => $event_data) {
-                                if ($i != 'repeat_instances') {
-                                    $instance_data[$i] = $event_data;
+                            // Create array with all data from non-repeat instances, then add each repeat instance and check
+                            foreach($data as $k => $event_data) {
+                                if ($k != 'repeat_instances') {
+                                    $instance_data[$k] = $event_data;
                                 }
                             }
 
@@ -357,17 +358,17 @@ class ExternalModule extends AbstractExternalModule {
 
                             // Case: If branching logic on non-repeat event uses repeat data. Assume data from any repeat instance that evaluates TRUE is valid.
                             if (isset($data['repeat_instances'])) {
-                                foreach($data as $i => $event_data) {
-                                    if ($i != 'repeat_instances') {
-                                        $instance_data[$i] = $event_data;
+                                foreach($data as $k => $event_data) {
+                                    if ($k != 'repeat_instances') {
+                                        $instance_data[$k] = $event_data;
                                     }
                                 }
 
-                                foreach($data['repeat_instances'] as $curr_event_id => $instances) {
+                                foreach($data['repeat_instances'] as $repeat_event_id => $instances) {
                                     foreach($instances[''] as $instance_num => $instance) {
-                                        $instance_data[$curr_event_id] = $instance + array($fake_field => '');
+                                        $instance_data[$repeat_event_id] = $instance + array($fake_field => '');
                                         $value = (string) LogicTester::evaluateCondition($logic, $instance_data);
-                                        if ($value !== '') {
+                                        if (!empty($value)) {
                                             break;
                                         }
                                     }
