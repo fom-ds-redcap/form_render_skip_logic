@@ -338,6 +338,7 @@ class ExternalModule extends AbstractExternalModule {
                         $logic = LogicTester::logicPrependEventName($logic, $events_names[$event_id], $Proj = $Proj);
 
                         if (isset($data['repeat_instances'][$event_id])) {
+                            // Retrieve values for each instance of the event
                             foreach($data as $i => $event_data) {
                                 if ($i != 'repeat_instances') {
                                     $instance_data[$i] = $event_data;
@@ -353,8 +354,8 @@ class ExternalModule extends AbstractExternalModule {
                             if (empty($data[$event_id])) {
                                 $data[$event_id] = array();
                             }
-                            $data[$event_id] += array($fake_field => '');
 
+                            // Case: If branching logic on non-repeat event uses repeat data. Assume data from any repeat instance that evaluates TRUE is valid.
                             if (isset($data['repeat_instances'])) {
                                 foreach($data as $i => $event_data) {
                                     if ($i != 'repeat_instances') {
@@ -371,6 +372,10 @@ class ExternalModule extends AbstractExternalModule {
                                         }
                                     }
                                 }
+                            }
+                            else {
+                                $data[$event_id] += array($fake_field => '');
+                                $value = (string) LogicTester::evaluateCondition($logic, $data);
                             }
                             $controls[$i]['value'] = $value;
                         }
