@@ -348,14 +348,22 @@ class ExternalModule extends AbstractExternalModule {
 
                             foreach($data['repeat_instances'][$event_id][''] as $instance_num => $instance) {
                                 $instance_data[$event_id] = $instance + array($fake_field => '');
-                                foreach($data['repeat_instances'] as $repeat_event_id => $instances) {
-                                    if ($repeat_event_id != $event_id) {
-                                        // Second loop in case data for branching logic is on other repeat events
-                                        foreach($instances[''] as $instance_num_2 => $instance_2) { 
-                                            $instance_data[$repeat_event_id] = $instance_2 + array($fake_field => '');
-                                            $value = (string) LogicTester::evaluateCondition($logic, $instance_data);
-                                            if (!empty($value)) {
-                                                break;
+
+                                // Case: if current event is only repeat event
+                                $repeat_event_ids = array_keys($data['repeat_instances']);
+                                if (in_array($event_id, $repeat_event_ids) && sizeof($repeat_event_ids) == 1) {
+                                    $value = (string) LogicTester::evaluateCondition($logic, $instance_data);
+                                }
+                                else {
+                                    foreach($data['repeat_instances'] as $repeat_event_id => $instances) {
+                                        if ($repeat_event_id != $event_id) {
+                                            // Second loop in case data for branching logic is on other repeat events
+                                            foreach($instances[''] as $instance_num_2 => $instance_2) { 
+                                                $instance_data[$repeat_event_id] = $instance_2 + array($fake_field => '');
+                                                $value = (string) LogicTester::evaluateCondition($logic, $instance_data);
+                                                if (!empty($value)) {
+                                                    break;
+                                                }
                                             }
                                         }
                                     }
