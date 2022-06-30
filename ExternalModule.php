@@ -415,7 +415,6 @@ class ExternalModule extends AbstractExternalModule {
 
                 foreach ($forms as $form) {
                     $key = 'all';
-                    $access = true;
 
                     if (isset($target_forms[$event_id][$form])) {
                         $key = 1;
@@ -439,17 +438,16 @@ class ExternalModule extends AbstractExternalModule {
                                 }
                             }
                             else if ($this->_calculateCondition($controls[$cond['a']]['value'], $cond['b'], $cond['op'])) {
-                                $forms_access[$id][$event_id][$form][$key] = $access;
+                                $forms_access[$id][$event_id][$form][$key] = true;
                                 break;
                             }
                             else {
-                                $access = false; 
-                                $forms_access[$id][$event_id][$form][$key] = $access;
+                                $forms_access[$id][$event_id][$form][$key] = false;
                             }
                         }
                     }
                     else if (!isset($forms_access[$id][$event_id][$form])) {
-                        $forms_access[$id][$event_id][$form][$key] = $access;
+                        $forms_access[$id][$event_id][$form][$key] = true;
                     }
                 }
             }
