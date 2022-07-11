@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
             $links = $('.formMenuList a');
             break;
         case 'record_home':
+            overrideAddNewInstanceButton();
             $links = $('#event_grid_table a');
             break;
         case 'record_status_dashboard':
@@ -94,6 +95,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     /**
+     * Overrides default functionality for adding repeat events
+     */
+    function overrideAddNewInstanceButton() {
+        $('.btnAddRptEv').attr('onclick', 'gridAddRepeatingEventDisabled(this)');
+    }
+
+    /**
      * Disables a link to a form.
      */
     function disableForm(cell) {
@@ -164,5 +172,31 @@ document.addEventListener('DOMContentLoaded', function() {
             // totally wrong.
             $('a[id="submit-btn-' + buttonName + '"]').hide();
         }
+    }
+
+    /**
+     * Adds a repeat event, but disables all forms affected by the module to start
+     */
+    function gridAddRepeatingEventDisabled(ob) {    
+        // Add repeat event as normal
+        gridAddRepeatingEvent(ob);
+
+        // Disable forms
+
+        var cell;
+
+        // Get current instance
+        var newInstance = $(ob).attr('instance')*1 + 2;
+
+        $('#event_grid_table > tbody > tr').each(function(){  
+            // Find cell
+            cell = $('td:eq('+newInstance+')', this);
+            console.log(cell);
+            try {
+                disableForm(cell);
+            } catch (err) {
+                console.log(err);
+            }
+        });
     }
 });
