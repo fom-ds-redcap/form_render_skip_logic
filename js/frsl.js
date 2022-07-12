@@ -1,3 +1,29 @@
+/**
+ * Adds a repeat event, but disables all forms affected by the module to start
+ */
+function gridAddRepeatingEventDisabled(ob) {    
+    // Add repeat event as normal
+    gridAddRepeatingEvent(ob);
+
+    // Disable forms
+    var links = $('#record_status_table a');
+    var cell;
+
+    // Get current instance
+    var newInstance = $(ob).attr('instance')*1 + 2;
+
+    $('#event_grid_table > tbody > tr').each(function(){  
+        // Find cell
+        cell = $('td:eq('+newInstance+')', this);
+        try {
+            cell.css('pointer-events', 'none');
+            cell.find('a').css('opacity', '.1');
+        } catch (err) {
+            console.log(err);
+        }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     var $links;
 
