@@ -207,6 +207,8 @@ class ExternalModule extends AbstractExternalModule {
         $fields_utilized = array($Proj->table_pk);
 
         $target_forms = array();
+        $forms_access = array();
+        
         foreach ($settings['control_fields'] as $i => $cf) {
             if ($cf['control_mode'] == 'default') {
                 // Checking for required fields in default mode.
@@ -245,6 +247,8 @@ class ExternalModule extends AbstractExternalModule {
                     }
 
                     foreach ($bl['target_forms'] as $form) {
+                        $forms_access["targetForms"][$event_id] = $form; // include to disable target forms when creating new instance
+
                         if (!isset($target_forms[$event_id][$form])) {
                             $target_forms[$event_id][$form] = array();
                         }
@@ -293,7 +297,6 @@ class ExternalModule extends AbstractExternalModule {
         $fake_field = uniqid('frsl_aux_');
 
         // Building forms access matrix.
-        $forms_access = array();
         foreach ($control_data as $id => $data) {
             $forms_access[$id] = array();
 
@@ -453,8 +456,6 @@ class ExternalModule extends AbstractExternalModule {
                 }
             }
         }
-
-        $forms_access["target_forms"] = $target_forms;
 
         self::$accessMatrix = $forms_access;
         return $forms_access;

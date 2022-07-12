@@ -45,10 +45,10 @@ function gridAddRepeatingEventDisabled(ob) {
     $('#event_grid_table > tbody > tr').each(function(){  
         // Find cell
         link = $('td:eq(' + newInstance +') > a', this);
-        if (link.length > 1) {
+        if (link.length == 1) {
             var params = getQueryParameters(link.attr('href'),link.attr('onclick'));
             params.id = params.id.replace(/\+/g,' ');
-            if (formRenderSkipLogic.formsAccess['targetForms'][params.event_id][params.page]) {
+            if (formRenderSkipLogic.formsAccess.targetForms[params.event_id][params.page]) {
                 try {
                     link.css('pointer-events', 'none');
                     link.css('opacity', '.1');
