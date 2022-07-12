@@ -242,7 +242,9 @@ class ExternalModule extends AbstractExternalModule {
                 $target_events = $bl['target_events_select'] ? array_intersect($bl['target_events'], $events) : $events;
 
                 foreach ($target_events as $event_id) {
-                    $forms_access["targetForms"][$event_id] = array();
+                    if (!isset($forms_access["targetForms"][$event_id])) {
+                        $forms_access["targetForms"][$event_id] = array();
+                    }
 
                     if (!isset($target_forms[$event_id])) {
                         $target_forms[$event_id] = array();
