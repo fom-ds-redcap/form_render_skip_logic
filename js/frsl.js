@@ -1,4 +1,29 @@
 /**
+ * Returns a set of key-value pairs that correspond to the query
+ * parameters in the given url. When handling repeating instruments
+ * (i.e. the url points to js) the onclick call is picked apart
+ * and returned as the parameters.
+ */
+function getQueryParameters(url, click) {
+    if (url == "javascript:;") {
+        var tmp = click.replace(/ |'|\);/g,'').split(',')
+        var parameters = {id: tmp[1], event_id: tmp[2], page: tmp[3]}
+    }
+    else {
+        var parameters = {};
+        var queryString = getQueryString(url);
+        var reg = /([^?&=]+)=?([^&]*)/g;
+        var keyValuePair;
+
+        while (keyValuePair = reg.exec(queryString)) {
+            parameters[keyValuePair[1]] = keyValuePair[2];
+        }
+    }
+
+    return parameters;
+}
+
+/**
  * Adds a repeat event, but disables all forms affected by the module to start
  */
 function gridAddRepeatingEventDisabled(ob) {    
@@ -6,20 +31,23 @@ function gridAddRepeatingEventDisabled(ob) {
     gridAddRepeatingEvent(ob);
 
     // Disable forms
-    var links = $('#record_status_table a');
-    var cell;
-
-    // Get current instance
+    var cell, link;
     var newInstance = $(ob).attr('instance')*1 + 2;
 
     $('#event_grid_table > tbody > tr').each(function(){  
         // Find cell
-        cell = $('td:eq('+newInstance+')', this);
-        try {
-            cell.css('pointer-events', 'none');
-            cell.find('a').css('opacity', '.1');
-        } catch (err) {
-            console.log(err);
+        link = $('td:eq(' + newInstance +') > a', this);
+        if (link.length > 1) {
+            var params = getQueryParameters(link.attr('href'),link.attr('onclick'));
+            params.id = params.id.replace(/\+/g,' ');
+            if (formRenderSkipLogic.formsAccess[params.id][params.event_id][params.page]) {
+                try {
+                    cell.css('pointer-events', 'none');
+                    cell.find('a').css('opacity', '.1');
+                } catch (err) {
+                    console.log(err);
+                }
+            }
         }
     });
 }
@@ -166,31 +194,6 @@ document.addEventListener('DOMContentLoaded', function() {
     function getQueryString(url) {
         url = decodeURI(url);
         return url.match(/\?.+/)[0];
-    }
-
-    /**
-     * Returns a set of key-value pairs that correspond to the query
-     * parameters in the given url. When handling repeating instruments
-     * (i.e. the url points to js) the onclick call is picked apart
-     * and returned as the parameters.
-     */
-    function getQueryParameters(url, click) {
-        if (url == "javascript:;") {
-            var tmp = click.replace(/ |'|\);/g,'').split(',')
-            var parameters = {id: tmp[1], event_id: tmp[2], page: tmp[3]}
-        }
-        else {
-            var parameters = {};
-            var queryString = getQueryString(url);
-            var reg = /([^?&=]+)=?([^&]*)/g;
-            var keyValuePair;
-
-            while (keyValuePair = reg.exec(queryString)) {
-                parameters[keyValuePair[1]] = keyValuePair[2];
-            }
-        }
-
-        return parameters;
     }
 
     /**
