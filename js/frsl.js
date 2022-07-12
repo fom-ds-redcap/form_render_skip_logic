@@ -48,7 +48,7 @@ function gridAddRepeatingEventDisabled(ob) {
         if (link.length == 1) {
             var params = getQueryParameters(link.attr('href'),link.attr('onclick'));
             params.id = params.id.replace(/\+/g,' ');
-            if (formRenderSkipLogic.formsAccess.targetForms[params.event_id][params.page]) {
+            if (formRenderSkipLogic.formsAccess.targetForms[params.event_id].includes(params.page)) {
                 try {
                     link.css('pointer-events', 'none');
                     link.css('opacity', '.1');

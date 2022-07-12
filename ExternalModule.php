@@ -247,7 +247,7 @@ class ExternalModule extends AbstractExternalModule {
                     }
 
                     foreach ($bl['target_forms'] as $form) {
-                        $forms_access["targetForms"][$event_id] = $form; // include to disable target forms when creating new instance
+                        $forms_access["targetForms"][$event_id][] = $form; // include to disable target forms when creating new instance
 
                         if (!isset($target_forms[$event_id][$form])) {
                             $target_forms[$event_id][$form] = array();
