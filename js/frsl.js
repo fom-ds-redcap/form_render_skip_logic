@@ -1,3 +1,11 @@
+    /**
+     * Returns the query string of the given url string.
+     */
+    function getQueryString(url) {
+        url = decodeURI(url);
+        return url.match(/\?.+/)[0];
+    }
+
 /**
  * Returns a set of key-value pairs that correspond to the query
  * parameters in the given url. When handling repeating instruments
@@ -186,14 +194,6 @@ document.addEventListener('DOMContentLoaded', function() {
     function disableForm(cell) {
         cell.style.pointerEvents = 'none';
         cell.style.opacity = '.1';
-    }
-
-    /**
-     * Returns the query string of the given url string.
-     */
-    function getQueryString(url) {
-        url = decodeURI(url);
-        return url.match(/\?.+/)[0];
     }
 
     /**
