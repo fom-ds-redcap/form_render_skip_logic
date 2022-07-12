@@ -454,6 +454,7 @@ class ExternalModule extends AbstractExternalModule {
             }
         }
 
+        $forms_access["target_forms"] = $target_forms;
 
         self::$accessMatrix = $forms_access;
         return $forms_access;

@@ -1,10 +1,10 @@
-    /**
-     * Returns the query string of the given url string.
-     */
-    function getQueryString(url) {
-        url = decodeURI(url);
-        return url.match(/\?.+/)[0];
-    }
+/**
+ * Returns the query string of the given url string.
+ */
+function getQueryString(url) {
+    url = decodeURI(url);
+    return url.match(/\?.+/)[0];
+}
 
 /**
  * Returns a set of key-value pairs that correspond to the query
@@ -32,7 +32,7 @@ function getQueryParameters(url, click) {
 }
 
 /**
- * Adds a repeat event, but disables all forms affected by the module to start
+ * Adds a repeat event, but disables all target forms affected by to start
  */
 function gridAddRepeatingEventDisabled(ob) {    
     // Add repeat event as normal
@@ -48,10 +48,10 @@ function gridAddRepeatingEventDisabled(ob) {
         if (link.length > 1) {
             var params = getQueryParameters(link.attr('href'),link.attr('onclick'));
             params.id = params.id.replace(/\+/g,' ');
-            if (formRenderSkipLogic.formsAccess[params.id][params.event_id][params.page]) {
+            if (formRenderSkipLogic.formsAccess['targetForms'][params.event_id][params.page]) {
                 try {
-                    cell.css('pointer-events', 'none');
-                    cell.find('a').css('opacity', '.1');
+                    link.css('pointer-events', 'none');
+                    link.css('opacity', '.1');
                 } catch (err) {
                     console.log(err);
                 }
