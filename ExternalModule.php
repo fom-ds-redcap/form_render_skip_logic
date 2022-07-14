@@ -347,6 +347,8 @@ class ExternalModule extends AbstractExternalModule {
                         $logic = LogicTester::logicPrependEventName($logic, $events_names[$event_id], $Proj = $Proj);
 
                         if (isset($data['repeat_instances'][$event_id])) {
+                            $instance_data = [];
+                            
                             // Retrieve values for each instance of the event
                             // Create array with all data from non-repeat instances, then add each repeat instance and check
                             foreach($data as $k => $event_data) {
