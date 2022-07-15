@@ -39,15 +39,15 @@ function gridAddRepeatingEventDisabled(ob) {
     gridAddRepeatingEvent(ob);
 
     // Disable forms
-    var cell, link;
-    var newInstance = $(ob).attr('instance')*1 + 2;
-
+    var index = $(ob).parentsUntil('th').parent().index();
+    var link;
     $('#event_grid_table > tbody > tr').each(function(){  
         // Find cell
-        link = $('td:eq(' + newInstance +') > a', this);
+        link = $('td:eq(' + (index+1) +') > a', this);
         if (link.length == 1) {
             var params = getQueryParameters(link.attr('href'),link.attr('onclick'));
             params.id = params.id.replace(/\+/g,' ');
+
             if (formRenderSkipLogic.formsAccess.targetForms[params.event_id].includes(params.page)) {
                 try {
                     link.css('pointer-events', 'none');
