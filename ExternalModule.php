@@ -430,9 +430,10 @@ class ExternalModule extends AbstractExternalModule {
 
                         $key = 1;
 
+                        // include to disable target form when creating new instance
                         if (!in_array($form, $forms_access["targetForms"][$event_id])) {
--                            $forms_access["targetForms"][$event_id][] = $form; // include to disable target forms when creating new instance
--                       }
+                             $forms_access["targetForms"][$event_id][] = $form; 
+                        }
 
                         foreach ($target_forms[$event_id][$form] as $cond) {
 
