@@ -428,8 +428,6 @@ class ExternalModule extends AbstractExternalModule {
 
                     if (isset($target_forms[$event_id][$form])) {
 
-                        $key = 1;
-
                         // include to disable target form when creating new instance
                         if (!in_array($form, $forms_access["targetForms"][$event_id])) {
                              $forms_access["targetForms"][$event_id][] = $form; 
@@ -453,12 +451,13 @@ class ExternalModule extends AbstractExternalModule {
                                     $forms_access[$id][$event_id][$form][$key] = $access;
                                 }
                             }
-                            else if ($this->_calculateCondition($controls[$cond['a']]['value'], $cond['b'], $cond['op'])) {
-                                $forms_access[$id][$event_id][$form][$key] = true;
-                                break;
-                            }
-                            else {
-                                $forms_access[$id][$event_id][$form][$key] = false;
+                            else 
+                            {
+                                $access = $this->_calculateCondition($controls[$cond['a']]['value'], $cond['b'], $cond['op']);
+                                $num_instances = isset($data["repeat_instances"][$event_id]['']) ? sizeof($data["repeat_instances"][$event_id]['']) : 1;
+                                for($i = 1; $i <= $num_instances; $i++) {
+                                    $forms_access[$id][$event_id][$form][$i] = $access;
+                                }
                             }
                         }
                     }
