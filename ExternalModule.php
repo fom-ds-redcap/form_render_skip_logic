@@ -456,7 +456,7 @@ class ExternalModule extends AbstractExternalModule {
                                 $access = $this->_calculateCondition($controls[$cond['a']]['value'], $cond['b'], $cond['op']);
                                 $num_instances = isset($data["repeat_instances"][$event_id]['']) ? sizeof($data["repeat_instances"][$event_id]['']) : 1;
                                 for($i = 1; $i <= $num_instances; $i++) {
-                                    if (!$forms_access[$id][$event_id][$form][$key]) { // Need this check in case prevent-hidden-data checked
+                                    if (!$forms_access[$id][$event_id][$form][$i]) { // Need this check in case prevent-hidden-data checked
                                         $forms_access[$id][$event_id][$form][$i] = $access;
                                     }
                                 }
