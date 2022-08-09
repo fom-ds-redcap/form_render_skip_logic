@@ -340,8 +340,9 @@ class ExternalModule extends AbstractExternalModule {
                         $logic = Calculate::formatCalcToPHP($logic, $Proj);
                         $logic = LogicTester::logicPrependEventName($logic, $events_names[$event_id], $Proj = $Proj);
 
+                        $instance_data = [];
+
                         if (isset($data['repeat_instances'][$event_id])) {
-                            $instance_data = [];
                             
                             // Retrieve values for each instance of the event
                             // Create array with all data from non-repeat instances, then add each repeat instance and check
@@ -424,11 +425,9 @@ class ExternalModule extends AbstractExternalModule {
                 }
 
                 foreach ($forms as $form) {
-                    $key = 'all';
-
                     if (isset($target_forms[$event_id][$form])) {
 
-                        // include to disable target form when creating new instance
+                        // Include to disable target form when creating new instance
                         if (!in_array($form, $forms_access["targetForms"][$event_id])) {
                              $forms_access["targetForms"][$event_id][] = $form; 
                         }
@@ -438,17 +437,16 @@ class ExternalModule extends AbstractExternalModule {
                             if (is_array($controls[$cond['a']]['value'])) // Repeat events
                             {
                                 foreach($controls[$cond['a']]['value'] as $i => $instance_val) {
-                                    $key = $i;
                                     $access = false;
 
-                                    if ($forms_access[$id][$event_id][$form][$key]) {
+                                    if ($forms_access[$id][$event_id][$form][$i]) {
                                         continue;
                                     }
 
                                     if ($this->_calculateCondition($instance_val, $cond['b'], $cond['op'])) {
                                         $access = true;
                                     }
-                                    $forms_access[$id][$event_id][$form][$key] = $access;
+                                    $forms_access[$id][$event_id][$form][$i] = $access;
                                 }
                             }
                             else 
@@ -456,7 +454,7 @@ class ExternalModule extends AbstractExternalModule {
                                 $access = $this->_calculateCondition($controls[$cond['a']]['value'], $cond['b'], $cond['op']);
                                 $num_instances = isset($data["repeat_instances"][$event_id]['']) ? sizeof($data["repeat_instances"][$event_id]['']) : 1;
                                 for($i = 1; $i <= $num_instances; $i++) {
-                                    if (!$forms_access[$id][$event_id][$form][$i]) { // Need this check in case prevent-hidden-data checked
+                                    if (!$forms_access[$id][$event_id][$form][$i]) { // Need this check in case prevent-hidden-data is checked
                                         $forms_access[$id][$event_id][$form][$i] = $access;
                                     }
                                 }
@@ -464,7 +462,7 @@ class ExternalModule extends AbstractExternalModule {
                         }
                     }
                     else if (!isset($forms_access[$id][$event_id][$form])) {
-                        $forms_access[$id][$event_id][$form][$key] = true;
+                        $forms_access[$id][$event_id][$form]["all"] = true;
                     }
                 }
             }
