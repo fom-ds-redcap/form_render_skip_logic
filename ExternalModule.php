@@ -414,11 +414,11 @@ class ExternalModule extends AbstractExternalModule {
 
                 if ($prevent_hidden_data && !empty($forms_status)) {
                     foreach ($forms_status[$id][$event_id] as $form => $instances) {
-			if (isset($target_forms[$event_id][$form])) {
+                        if (isset($target_forms[$event_id][$form])) {
                         	foreach($instances as $instance_num => $instance) {
                             		$forms_access[$id][$event_id][$form][$instance_num] = true;
                         	}
-			}
+                        }
                     }
                 }
 
