@@ -303,13 +303,13 @@ class ExternalModule extends AbstractExternalModule {
             // If repeat instancesa re empty, then dummy fields are added, 
             // so REDCap calculation will handle it properly.
             if (!empty($Proj->RepeatingFormsEvents)) {
-                foreach($Proj->$RepeatingFormsEvents as $repeat_event_id => $repeat_instrs) {
-                    if (isset($data['repeat_instances'][$repeat_event_id])) {
-                        $fields = [];
-                        foreach ($repeat_instrs as $i => $repeat_instr) {
-                            $fields += REDCap::getFieldNames($repeat_instr);
+                foreach($Proj->RepeatingFormsEvents as $repeat_event_id => $repeat_instrs) {
+                    if ($repeat_instrs == 'WHOLE' && !isset($data['repeat_instances'][$repeat_event_id])) {
+                        $repeat_fields = [];
+                        foreach ($Proj->eventsForms[$repeat_event_id] as $i => $repeat_instr) {
+                            $repeat_fields += REDCap::getFieldNames($repeat_instr);
                         }
-                        $data['repeat_instances'][$repeat_event_id][''] = array_fill_keys($fields, '');
+                        $data['repeat_instances'][$repeat_event_id][''][1] = array_fill_keys($repeat_fields, '');
                     }
                 }
             }
@@ -466,7 +466,7 @@ class ExternalModule extends AbstractExternalModule {
                                     $forms_access[$id][$event_id][$form][$i] = $access;
                                 }
                             }
-                            else 
+                            else
                             {
                                 $access = $this->_calculateCondition($controls[$cond['a']]['value'], $cond['b'], $cond['op']);
                                 $num_instances = isset($data["repeat_instances"][$event_id]['']) ? sizeof($data["repeat_instances"][$event_id]['']) : 1;
@@ -484,7 +484,7 @@ class ExternalModule extends AbstractExternalModule {
                 }
             }
         }
-        
+
         self::$accessMatrix = $forms_access;
         return $forms_access;
     }
