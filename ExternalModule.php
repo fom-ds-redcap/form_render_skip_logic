@@ -414,9 +414,11 @@ class ExternalModule extends AbstractExternalModule {
 
                 if ($prevent_hidden_data && !empty($forms_status)) {
                     foreach ($forms_status[$id][$event_id] as $form => $instances) {
-                        foreach($instances as $instance_num => $instance) {
-                            $forms_access[$id][$event_id][$form][$instance_num] = true;
-                        }
+			if (isset($target_forms[$event_id][$form])) {
+                        	foreach($instances as $instance_num => $instance) {
+                            		$forms_access[$id][$event_id][$form][$instance_num] = true;
+                        	}
+			}
                     }
                 }
 
@@ -425,11 +427,12 @@ class ExternalModule extends AbstractExternalModule {
                 }
 
                 foreach ($forms as $form) {
+
                     if (isset($target_forms[$event_id][$form])) {
 
                         // Include to disable target form when creating new instance
                         if (!in_array($form, $forms_access["targetForms"][$event_id])) {
-                             $forms_access["targetForms"][$event_id][] = $form; 
+                             $forms_access["targetForms"][$event_id][] = $form;
                         }
 
                         foreach ($target_forms[$event_id][$form] as $cond) {
@@ -467,7 +470,7 @@ class ExternalModule extends AbstractExternalModule {
                 }
             }
         }
-
+        
         self::$accessMatrix = $forms_access;
         return $forms_access;
     }
