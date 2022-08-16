@@ -305,17 +305,28 @@ class ExternalModule extends AbstractExternalModule {
             if (!empty($Proj->RepeatingFormsEvents)) {
                 foreach($Proj->RepeatingFormsEvents as $repeat_event_id => $repeat_instrs) {
                     if ($repeat_instrs == 'WHOLE') {
-                        $repeat_fields = [];
+                        $dummy_event_data = [];
 
-                        foreach ($Proj->eventsForms[$repeat_event_id] as $i => $repeat_instr) {
-                            $repeat_fields += REDCap::getFieldNames($repeat_instr);
+                        foreach ($Proj->eventsForms[$repeat_event_id] as $repeat_instr) {
+                            $fields = REDCap::getFieldNames($repeat_instr);
+                            foreach($fields as $field) {
+                                if ($Proj->isCheckbox($field)) {
+                                    $choices = array_keys(REDCap::getExportFieldNames($field)[$field]);
+                                    foreach($choices as $choice) {
+                                        $dummy_event_data[$field][$choice] = 0;
+                                    }
+                                }
+                                else {
+                                    $dummy_event_data[$field] = '';
+                                }
+                            }
                         }
 
                         $max_instances = sizeof($data['repeat_instances'][$repeat_event_id]['']) == 0 ? 1 : sizeof($data['repeat_instances'][$repeat_event_id]['']);
 
                         for ($i = 1; $i <= $max_instances; $i++) {
                             if (!isset($data['repeat_instances'][$repeat_event_id][''][$i]))
-                                $data['repeat_instances'][$repeat_event_id][''][$i] = array_fill_keys($repeat_fields, '');
+                                $data['repeat_instances'][$repeat_event_id][''][$i] = $dummy_event_data;
                         }
                     }
                 }
