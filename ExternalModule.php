@@ -300,16 +300,23 @@ class ExternalModule extends AbstractExternalModule {
         foreach ($control_data as $id => $data) {
             $forms_access[$id] = array();
 
-            // If repeat instancesa re empty, then dummy fields are added, 
+            // If repeat instancesa are empty, then dummy fields are added, 
             // so REDCap calculation will handle it properly.
             if (!empty($Proj->RepeatingFormsEvents)) {
                 foreach($Proj->RepeatingFormsEvents as $repeat_event_id => $repeat_instrs) {
-                    if ($repeat_instrs == 'WHOLE' && !isset($data['repeat_instances'][$repeat_event_id])) {
+                    if ($repeat_instrs == 'WHOLE') {
                         $repeat_fields = [];
+
                         foreach ($Proj->eventsForms[$repeat_event_id] as $i => $repeat_instr) {
                             $repeat_fields += REDCap::getFieldNames($repeat_instr);
                         }
-                        $data['repeat_instances'][$repeat_event_id][''][1] = array_fill_keys($repeat_fields, '');
+
+                        $max_instances = sizeof($data['repeat_instances'][$repeat_event_id]['']) == 0 ? 1 : sizeof($data['repeat_instances'][$repeat_event_id]['']);
+
+                        for ($i = 1; $i <= $max_instances; $i++) {
+                            if (!isset($data['repeat_instances'][$repeat_event_id][''][$i]))
+                                $data['repeat_instances'][$repeat_event_id][''][$i] = array_fill_keys($repeat_fields, '');
+                        }
                     }
                 }
             }
