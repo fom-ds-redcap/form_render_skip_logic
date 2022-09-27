@@ -263,13 +263,18 @@ class ExternalModule extends AbstractExternalModule {
             }
         }
 
+        
+        /* 
+        // Commenting out for now, as this block is from the original code, but the $dag variable is never initialized
         // Fetch only relevant data if a DAG is being used
         if ($dag == $_GET['dag']) {
             $record_list = Records::getRecordListSingleDag($Proj->project_id, $dag);
         } else {
            $record_list = $record;
-        }
-
+        } */
+        
+        $record_list = $record;
+        
         $control_data = REDCap::getData($Proj->project_id, 'array', $record_list, $fields_utilized, null, null,
                                         false, false, false, false, false, false, false, false, false, array(),
                                         false, false, false, false, false, false, 'EVENT', false, false, true);
@@ -300,7 +305,7 @@ class ExternalModule extends AbstractExternalModule {
         foreach ($control_data as $id => $data) {
             $forms_access[$id] = array();
 
-            // If repeat instancesa are empty, then dummy fields are added, 
+            // If repeat instances are empty, then dummy fields are added, 
             // so REDCap calculation will handle it properly.
             if (!empty($Proj->RepeatingFormsEvents)) {
                 foreach($Proj->RepeatingFormsEvents as $repeat_event_id => $repeat_instrs) {
