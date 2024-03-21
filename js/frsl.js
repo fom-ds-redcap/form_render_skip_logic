@@ -185,7 +185,13 @@ document.addEventListener('DOMContentLoaded', function() {
      * Overrides default functionality for adding repeat events
      */
     function overrideAddNewInstanceButton() {
-        $('.btnAddRptEv').attr('onclick', 'gridAddRepeatingEventDisabled(this)');
+        
+        $('.btnAddRptEv').each(function () {
+            if ($(this).attr('event_id')) {
+                $(this).attr('onclick', 'gridAddRepeatingEventDisabled(this)');
+            }
+        });
+
     }
 
     /**
