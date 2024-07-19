@@ -134,7 +134,12 @@
                             "type": "event-list"
                         }
                     ]
-                }
+                },
+				{
+		            "key": "per_instance_rule",
+		            "name": "Check to apply first instance that evaluates as true for all, instead of per instance",
+		            "type": "checkbox"
+		        }
             ]
         }
     ],
