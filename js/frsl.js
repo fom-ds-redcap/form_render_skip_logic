@@ -48,7 +48,8 @@ function gridAddRepeatingEventDisabled(ob) {
             var params = getQueryParameters(link.attr('href'),link.attr('onclick'));
             params.id = params.id.replace(/\+/g,' ');
 
-            if (formRenderSkipLogic.formsAccess.targetForms[params.event_id].includes(params.page)) {
+            if (formRenderSkipLogic.formsAccess.targetForms[params.event_id].includes(params.page) && 
+                !formRenderSkipLogic.formsAccess[params.id][params.event_id][params.page]['all']) {
                 try {
                     link.css('pointer-events', 'none');
                     link.css('opacity', '.1');
@@ -63,6 +64,7 @@ function gridAddRepeatingEventDisabled(ob) {
 document.addEventListener('DOMContentLoaded', function() {
     var $links;
 
+    console.log(formRenderSkipLogic.formsAccess);
     switch (formRenderSkipLogic.location) {
         case 'data_entry_form':
             overrideNextFormButtonsRedirect();
@@ -185,7 +187,13 @@ document.addEventListener('DOMContentLoaded', function() {
      * Overrides default functionality for adding repeat events
      */
     function overrideAddNewInstanceButton() {
-        $('.btnAddRptEv').attr('onclick', 'gridAddRepeatingEventDisabled(this)');
+        
+        $('.btnAddRptEv').each(function () {
+            if ($(this).attr('event_id')) {
+                $(this).attr('onclick', 'gridAddRepeatingEventDisabled(this)');
+            }
+        });
+
     }
 
     /**
