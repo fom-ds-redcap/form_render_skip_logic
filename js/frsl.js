@@ -64,7 +64,6 @@ function gridAddRepeatingEventDisabled(ob) {
 document.addEventListener('DOMContentLoaded', function() {
     var $links;
 
-    console.log(formRenderSkipLogic.formsAccess);
     switch (formRenderSkipLogic.location) {
         case 'data_entry_form':
             overrideNextFormButtonsRedirect();
@@ -187,13 +186,7 @@ document.addEventListener('DOMContentLoaded', function() {
      * Overrides default functionality for adding repeat events
      */
     function overrideAddNewInstanceButton() {
-        
-        $('.btnAddRptEv').each(function () {
-            if ($(this).attr('event_id')) {
-                $(this).attr('onclick', 'gridAddRepeatingEventDisabled(this)');
-            }
-        });
-
+        $(this).attr('onclick', 'gridAddRepeatingEventDisabled(this)');
     }
 
     /**
