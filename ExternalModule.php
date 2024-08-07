@@ -216,7 +216,7 @@ class ExternalModule extends AbstractExternalModule {
                     continue;
                 }
 
-                $controls[$i] = array('type' => 'default', 'field' => $cf['control_field_key'], 'event' => $cf['control_event_id']);
+                $controls[$i] = array('type' => 'default', 'per_instance_rule' => $cf['per_instance_rule'], 'field' => $cf['control_field_key'], 'event' => $cf['control_event_id']);
                 $fields_utilized[] = $cf['control_field_key'];
             }
             elseif ($cf['control_mode'] == 'advanced') {
@@ -225,7 +225,7 @@ class ExternalModule extends AbstractExternalModule {
                     continue;
                 }
 
-                $controls[$i] = array('type' => 'advanced', 'logic' => $cf['control_piping']);
+                $controls[$i] = array('type' => 'advanced', 'per_instance_rule' => $cf['per_instance_rule'], 'logic' => $cf['control_piping']);
                 $fields_utilized = array_merge($fields_utilized, array_keys(getBracketedFields($cf['control_piping'], true, true, true)));
             }
             else {
@@ -476,20 +476,30 @@ class ExternalModule extends AbstractExternalModule {
                         }
 
                         foreach ($target_forms[$event_id][$form] as $cond) {
-
+                            
                             if (is_array($controls[$cond['a']]['value'])) // Repeat events
                             {
+                                $apply_true_for_all = $controls[$cond['a']]['per_instance_rule']; 
+                                $previously_true = false;
+                                
                                 foreach($controls[$cond['a']]['value'] as $i => $instance_val) {
                                     $access = false;
 
                                     if ($forms_access[$id][$event_id][$form][$i]) {
                                         continue;
                                     }
-
+                                    
                                     if ($this->_calculateCondition($instance_val, $cond['b'], $cond['op'])) {
                                         $access = true;
+                                        $previously_true = true;
                                     }
-                                    $forms_access[$id][$event_id][$form][$i] = $access;
+                                    
+                                    if ($apply_true_for_all && $previously_true) {
+                                        $forms_access[$id][$event_id][$form]["all"] = true;
+                                    }
+                                    else {
+                                        $forms_access[$id][$event_id][$form][$i] = $access;
+                                    }
                                 }
                             }
                             else
