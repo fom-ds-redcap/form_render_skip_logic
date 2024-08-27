@@ -310,7 +310,7 @@ class ExternalModule extends AbstractExternalModule {
             if (!empty($Proj->RepeatingFormsEvents)) {
                 foreach($Proj->RepeatingFormsEvents as $repeat_event_id => $repeat_instrs) {
                     if ($repeat_instrs == 'WHOLE') {
-                        $max_instances = sizeof($data['repeat_instances'][$repeat_event_id]['']) == 0 ? 1 : max(array_keys($data['repeat_instances'][$repeat_event_id]['']));
+                        $max_instances = $data['repeat_instances'][$repeat_event_id][''] && sizeof($data['repeat_instances'][$repeat_event_id]['']) == 0 ? 1 : max(array_keys($data['repeat_instances'][$repeat_event_id]['']));
 
                         if ($max_instances != sizeof($data['repeat_instances'][$repeat_event_id][''])) {
                             
@@ -455,9 +455,9 @@ class ExternalModule extends AbstractExternalModule {
                 if ($prevent_hidden_data && !empty($forms_status)) {
                     foreach ($forms_status[$id][$event_id] as $form => $instances) {
                         if (isset($target_forms[$event_id][$form])) {
-                        	foreach($instances as $instance_num => $instance) {
-                            		$forms_access[$id][$event_id][$form][$instance_num] = true;
-                        	}
+                            foreach($instances as $instance_num => $instance) {
+                                    $forms_access[$id][$event_id][$form][$instance_num] = true;
+                            }
                         }
                     }
                 }
