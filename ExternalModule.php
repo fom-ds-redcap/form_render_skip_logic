@@ -23,14 +23,14 @@ use REDCap;
  */
 class ExternalModule extends AbstractExternalModule {
     static protected $accessMatrix;
-
+    
     /**
      * @inheritdoc
      */
     function redcap_every_page_before_render($project_id) {
         define('FORM_RENDER_SKIP_LOGIC_PREFIX', $this->PREFIX);
     }
-
+    
     /**
      * @inheritdoc
      */
@@ -39,23 +39,23 @@ class ExternalModule extends AbstractExternalModule {
             $this->setJsSettings(array('modulePrefix' => $this->PREFIX, 'helperButtons' => $this->getPipingHelperButtons()));
             $this->includeJs('js/config.js');
             $this->includeCss('css/config.css');
-
+            
             return;
         }
-
+        
         if (!$project_id || !in_array(PAGE, array('DataEntry/record_status_dashboard.php', 'DataEntry/record_home.php'))) {
             return;
         }
-
+        
         // Do not load FRSL on the add/edit record splash page
         if ( strpos(PAGE, 'DataEntry/record_home.php') !== false && !$_GET['id'] ) {
             return;
         }
-
+        
         $location = substr(PAGE, 10, strlen(PAGE) - 14);
         $this->loadFRSL($location, $this->getQueryParam('id'));
     }
-
+    
     /**
      * @inheritdoc
      */
@@ -63,10 +63,10 @@ class ExternalModule extends AbstractExternalModule {
         if (empty($record)) {
             $record = $this->getQueryParam('id');
         }
-
+        
         $this->loadFRSL('data_entry_form', $record, $event_id, $instrument, $instance);
     }
-
+    
     /**
      * @inheritdoc
      */
@@ -74,23 +74,23 @@ class ExternalModule extends AbstractExternalModule {
         if (empty($record)) {
             $record = $this->getQueryParam('id');
         }
-
+        
         $this->overrideSurveysStatuses($record, $event_id);
-
+        
         global $Proj;
         $survey_id = $Proj->forms[$instrument]['survey_id'];
         if ($Proj->surveys[$survey_id]['survey_enabled']) {
             return;
         }
-
+        
         // Access denied for this survey.
         if (!$redirect_url = Survey::getAutoContinueSurveyUrl($record, $instrument, $event_id, $repeat_instance)) {
             $redirect_url = APP_PATH_WEBROOT;
         }
-
+        
         $this->redirect($redirect_url);
     }
-
+    
     /**
      * @inheritdoc
      */
@@ -99,7 +99,7 @@ class ExternalModule extends AbstractExternalModule {
             $this->overrideSurveysStatuses($record, $event_id);
         }
     }
-
+    
     /**
      * @inheritdoc
      */
@@ -107,39 +107,39 @@ class ExternalModule extends AbstractExternalModule {
         if (strpos($old_version, 'v2.') !== 0 || $version[0] != 'v' || !is_numeric($version[1]) || $version[1] < 3) {
             return;
         }
-
+        
         // Migrating settings from version 2.x to 3.x.
         foreach (ExternalModules::getEnabledProjects($this->PREFIX) as $project) {
             $pid = $project['project_id'];
-
+            
             if ($this->getProjectSetting('control_field', $pid) === null || $this->getProjectSetting('control_fields', $pid) !== null) {
                 // Skip if there is no config from v2 available or if there is
                 // already config from v3.
                 continue;
             }
-
+            
             $forms = $this->getProjectSetting('instrument_name', $pid);
             $values = $this->getProjectSetting('control_field_value', $pid);
-
+            
             $bl = array();
             foreach ($forms as $i => $form) {
                 if (empty($form)) {
                     continue;
                 }
-
+                
                 $value = $values[$i];
                 if (!isset($bl[$value])) {
                     $bl[$value] = array();
                 }
-
+                
                 $bl[$value][] = $form;
             }
-
+            
             $target_forms = array();
             foreach ($bl as $forms) {
                 $target_forms[] = array_values($forms);
             }
-
+            
             $count = count($bl);
             $settings = array(
                 'control_fields' => array('true'),
@@ -155,13 +155,13 @@ class ExternalModule extends AbstractExternalModule {
                 'target_events' => array(array_fill(0, $count, array(null))),
                 'target_forms' => array($target_forms),
             );
-
+            
             foreach ($settings as $key => $value) {
                 $this->setProjectSetting($key, $value, $pid);
             }
         }
     }
-
+    
     /**
      * Gets forms access matrix.
      *
@@ -181,16 +181,16 @@ class ExternalModule extends AbstractExternalModule {
         if (isset(self::$accessMatrix)) {
             return self::$accessMatrix;
         }
-
+        
         global $Proj;
-
+        
         if ($prevent_hidden_data = $this->getProjectSetting('prevent_hidden_data')) {
             $records = $record ? array($record) : Records::getRecordList($Proj->project_id);
             $events = $event_id ? array($event_id => $Proj->eventsForms[$event_id]) : array();
-
+            
             $forms_status = Records::getFormStatus($Proj->project_id, $records, $arm, null, $events);
         }
-
+        
         if ($event_id) {
             $events = array($event_id);
         }
@@ -199,13 +199,13 @@ class ExternalModule extends AbstractExternalModule {
             $arm = $event_id ? $Proj->eventInfo[$event_id]['arm_num'] : $this->getQueryParam('arm', 1);
             $events = array_keys($Proj->events[$arm]['events']);
         }
-
+        
         $settings = $this->getFormattedSettings($Proj->project_id);
         $events_names = $Proj->getUniqueEventNames();
-
+        
         $controls = array();
         $fields_utilized = array($Proj->table_pk);
-
+        
         $target_forms = array();
         $forms_access = array();
         
@@ -215,7 +215,7 @@ class ExternalModule extends AbstractExternalModule {
                 if (!$cf['control_field_key']) {
                     continue;
                 }
-
+                
                 $controls[$i] = array('type' => 'default', 'per_instance_rule' => $cf['per_instance_rule'], 'field' => $cf['control_field_key'], 'event' => $cf['control_event_id']);
                 $fields_utilized[] = $cf['control_field_key'];
             }
@@ -224,35 +224,35 @@ class ExternalModule extends AbstractExternalModule {
                 if (!$cf['control_piping']) {
                     continue;
                 }
-
+                
                 $controls[$i] = array('type' => 'advanced', 'per_instance_rule' => $cf['per_instance_rule'], 'logic' => $cf['control_piping']);
                 $fields_utilized = array_merge($fields_utilized, array_keys(getBracketedFields($cf['control_piping'], true, true, true)));
             }
             else {
                 continue;
             }
-
+            
             $control[$i]['default'] = $cf['control_default_value'];
-
+            
             foreach ($cf['branching_logic'] as $bl) {
                 if (empty($bl['target_forms'])) {
                     continue;
                 }
-
+                
                 $target_events = $bl['target_events_select'] ? array_intersect($bl['target_events'], $events) : $events;
-
+                
                 foreach ($target_events as $event_id) {
-
+                    
                     if (!isset($target_forms[$event_id])) {
                         $target_forms[$event_id] = array();
                     }
-
+                    
                     foreach ($bl['target_forms'] as $form) {
-
+                        
                         if (!isset($target_forms[$event_id][$form])) {
                             $target_forms[$event_id][$form] = array();
                         }
-
+                        
                         $target_forms[$event_id][$form][] = array(
                             'a' => $i,
                             'b' => $bl['condition_value'],
@@ -262,23 +262,23 @@ class ExternalModule extends AbstractExternalModule {
                 }
             }
         }
-
         
-        /* 
-        // Commenting out for now, as this block is from the original code, but the $dag variable is never initialized
-        // Fetch only relevant data if a DAG is being used
-        if ($dag == $_GET['dag']) {
-            $record_list = Records::getRecordListSingleDag($Proj->project_id, $dag);
-        } else {
-           $record_list = $record;
-        } */
+        
+        /*
+         // Commenting out for now, as this block is from the original code, but the $dag variable is never initialized
+         // Fetch only relevant data if a DAG is being used
+         if ($dag == $_GET['dag']) {
+         $record_list = Records::getRecordListSingleDag($Proj->project_id, $dag);
+         } else {
+         $record_list = $record;
+         } */
         
         $record_list = $record;
         
         $control_data = REDCap::getData($Proj->project_id, 'array', $record_list, $fields_utilized, null, null,
-                                        false, false, false, false, false, false, false, false, false, array(),
-                                        false, false, false, false, false, false, 'EVENT', false, false, true);
-
+            false, false, false, false, false, false, false, false, false, array(),
+            false, false, false, false, false, false, 'EVENT', false, false, true);
+        
         // Further subset on Record Status Dashboard if limiting records per page
         if ( ($pagenum = $_GET['pagenum']) && ($num_per_page = $_GET['num_per_page']) ) {
             if ($num_per_page !== 'ALL') {
@@ -288,34 +288,36 @@ class ExternalModule extends AbstractExternalModule {
                 $control_data = (array_slice($control_data, ($pagenum - 1) * $num_per_page, $slice_length, true));
             }
         }
-
+        
         if ($record && !isset($control_data[$record])) {
             // Handling new record case.
             $data = array_combine(array_keys($Proj->metadata), array_fill(0, count($Proj->metadata), ''));
             $data = array_combine(array_keys($Proj->eventInfo), array_fill(0, count($Proj->eventInfo), $data));
-
+            
             $control_data = array($record => $data);
         }
-
+        
         // This field will be used to avoid conflicts between empty smart vars
         // piping and formulas calculation.
         $fake_field = uniqid('frsl_aux_');
-
+        
         // Building forms access matrix.
         foreach ($control_data as $id => $data) {
             $forms_access[$id] = array();
-
-            // If repeat instances are empty, then dummy fields are added, 
+            
+            // If repeat instances are empty, then dummy fields are added,
             // so REDCap calculation will handle it properly.
             if (!empty($Proj->RepeatingFormsEvents)) {
                 foreach($Proj->RepeatingFormsEvents as $repeat_event_id => $repeat_instrs) {
                     if ($repeat_instrs == 'WHOLE') {
-                        $max_instances = $data['repeat_instances'][$repeat_event_id][''] && sizeof($data['repeat_instances'][$repeat_event_id]['']) == 0 ? 1 : max(array_keys($data['repeat_instances'][$repeat_event_id]['']));
-
-                        if ($max_instances != sizeof($data['repeat_instances'][$repeat_event_id][''])) {
+                        
+                        $repeat_instances_size = isset($data['repeat_instances'][$repeat_event_id]['']) ? sizeof($data['repeat_instances'][$repeat_event_id]['']) : 0;
+                        $max_instances = $repeat_instances_size == 0 ? 1 : max(array_keys($data['repeat_instances'][$repeat_event_id]['']));
+                        
+                        if ($max_instances != $repeat_instances_size) {
                             
                             $dummy_event_data = [];
-
+                            
                             foreach ($Proj->eventsForms[$repeat_event_id] as $repeat_instr) {
                                 $fields = REDCap::getFieldNames($repeat_instr);
                                 foreach($fields as $field) {
@@ -330,7 +332,7 @@ class ExternalModule extends AbstractExternalModule {
                                     }
                                 }
                             }
-
+                            
                             for ($i = 1; $i <= $max_instances; $i++) {
                                 if (!isset($data['repeat_instances'][$repeat_event_id][''][$i]))
                                     $data['repeat_instances'][$repeat_event_id][''][$i] = $dummy_event_data;
@@ -339,19 +341,19 @@ class ExternalModule extends AbstractExternalModule {
                     }
                 }
             }
-
+            
             foreach ($events as $event_id) {
                 $forms_access[$id][$event] = array();
-
+                
                 // Calculating the control values for the current record and
                 // current event.
                 foreach ($controls as $i => $control) {
                     $controls[$i]['value'] = $controls[$i]['default'];
-
+                    
                     if ($control['type'] == 'default') {
                         // Getting 1st operand for default mode.
                         $source_event = empty($control['event']) ? $event_id : $control['event'];
-
+                        
                         // Check repeat instances
                         if (isset($data['repeat_instances'][$source_event]))
                         {
@@ -371,17 +373,17 @@ class ExternalModule extends AbstractExternalModule {
                         // single quoted null values ('').
                         $logic = str_replace("''", '""', $control['logic']);
                         $logic = Piping::pipeSpecialTags($logic, $Proj->project_id, $id, $event_id, 1, null, true);
-
+                        
                         // If a smart variable is empty, it is converted into
                         // a dummy wildcard so REDCap calculation will handle
                         // it properly.
                         $logic = str_replace("''", '[' . $fake_field . ']', $logic);
-
+                        
                         $logic = Calculate::formatCalcToPHP($logic, $Proj);
                         $logic = LogicTester::logicPrependEventName($logic, $events_names[$event_id], $Proj = $Proj);
-
+                        
                         $instance_data = [];
-
+                        
                         if (isset($data['repeat_instances'][$event_id])) {
                             
                             // Retrieve values for each instance of the event
@@ -391,10 +393,10 @@ class ExternalModule extends AbstractExternalModule {
                                     $instance_data[$k] = $event_data;
                                 }
                             }
-
+                            
                             foreach($data['repeat_instances'][$event_id][''] as $instance_num => $instance) {
                                 $instance_data[$event_id] = $instance + array($fake_field => '');
-
+                                
                                 // Case: if current event is only repeat event
                                 $repeat_event_ids = array_keys($data['repeat_instances']);
                                 if (in_array($event_id, $repeat_event_ids) && sizeof($repeat_event_ids) == 1) {
@@ -405,7 +407,7 @@ class ExternalModule extends AbstractExternalModule {
                                         if ($repeat_event_id != $event_id) {
                                             // Second loop in case data for branching logic is on other repeat events
                                             // NOTE: Will only account for one additional repeat event
-                                            foreach($instances[''] as $instance_num_2 => $instance_2) { 
+                                            foreach($instances[''] as $instance_num_2 => $instance_2) {
                                                 $instance_data[$repeat_event_id] = $instance_2 + array($fake_field => '');
                                                 $value = (string) LogicTester::evaluateCondition($logic, $instance_data);
                                                 if (!empty($value)) {
@@ -422,7 +424,7 @@ class ExternalModule extends AbstractExternalModule {
                             if (empty($data[$event_id])) {
                                 $data[$event_id] = array();
                             }
-
+                            
                             // Case: If branching logic on non-repeat event uses repeat data. Assume data from any repeat instance that evaluates TRUE is valid.
                             if (isset($data['repeat_instances'])) {
                                 foreach($data as $k => $event_data) {
@@ -430,7 +432,7 @@ class ExternalModule extends AbstractExternalModule {
                                         $instance_data[$k] = $event_data;
                                     }
                                 }
-
+                                
                                 foreach($data['repeat_instances'] as $repeat_event_id => $instances) {
                                     foreach($instances[''] as $instance_num => $instance) {
                                         $instance_data[$repeat_event_id] = $instance + array($fake_field => '');
@@ -449,42 +451,42 @@ class ExternalModule extends AbstractExternalModule {
                         }
                     }
                 }
-
+                
                 $forms = $Proj->eventsForms[$event_id];
-
+                
                 if ($prevent_hidden_data && !empty($forms_status)) {
                     foreach ($forms_status[$id][$event_id] as $form => $instances) {
                         if (isset($target_forms[$event_id][$form])) {
                             foreach($instances as $instance_num => $instance) {
-                                    $forms_access[$id][$event_id][$form][$instance_num] = true;
+                                $forms_access[$id][$event_id][$form][$instance_num] = true;
                             }
                         }
                     }
                 }
-
+                
                 if (!isset($forms_access["targetForms"][$event_id])) {
                     $forms_access["targetForms"][$event_id] = array();
                 }
-
+                
                 foreach ($forms as $form) {
-
+                    
                     if (isset($target_forms[$event_id][$form])) {
-
+                        
                         // Include to disable target form when creating new instance
                         if (!in_array($form, $forms_access["targetForms"][$event_id])) {
-                             $forms_access["targetForms"][$event_id][] = $form;
+                            $forms_access["targetForms"][$event_id][] = $form;
                         }
-
+                        
                         foreach ($target_forms[$event_id][$form] as $cond) {
                             
                             if (is_array($controls[$cond['a']]['value'])) // Repeat events
                             {
-                                $apply_true_for_all = $controls[$cond['a']]['per_instance_rule']; 
+                                $apply_true_for_all = $controls[$cond['a']]['per_instance_rule'];
                                 $previously_true = false;
                                 
                                 foreach($controls[$cond['a']]['value'] as $i => $instance_val) {
                                     $access = false;
-
+                                    
                                     if ($forms_access[$id][$event_id][$form][$i]) {
                                         continue;
                                     }
@@ -520,11 +522,11 @@ class ExternalModule extends AbstractExternalModule {
                 }
             }
         }
-
+        
         self::$accessMatrix = $forms_access;
         return $forms_access;
     }
-
+    
     /**
      * Loads main feature functionality.
      *
@@ -545,30 +547,30 @@ class ExternalModule extends AbstractExternalModule {
      */
     protected function loadFRSL($location, $record = null, $event_id = null, $instrument = null, $instance = null) {
         global $Proj;
-
+        
         $next_step_path = '';
         $forms_access = $this->getFormsAccessMatrix($event_id, $record);
-
+        
         if ($record && $event_id && $instrument) {
             $instruments = $Proj->eventsForms[$event_id];
             $curr_forms_access = $forms_access[$record][$event_id];
-
+            
             $i = array_search($instrument, $instruments) + 1;
             $len = count($instruments);
-
+            
             while ($i < $len) {
                 if ($curr_forms_access[$instruments[$i]]) {
                     $next_instrument = $instruments[$i];
                     break;
                 }
-
+                
                 $i++;
             }
-
+            
             if (isset($next_instrument)) {
                 // Path to the next available form in the current event.
                 $next_step_path = APP_PATH_WEBROOT . 'DataEntry/index.php?pid=' . $Proj->project_id . '&id=' . $record . '&event_id=' . $event_id . '&page=' . $next_instrument;
-
+                
                 // If this is a repeating event, maintain the instance
                 if ($Proj->hasRepeatingFormsEvents() && $instance) {
                     if ($Proj->RepeatingFormsEvents[$event_id] == "WHOLE") {
@@ -576,29 +578,29 @@ class ExternalModule extends AbstractExternalModule {
                     }
                 }
             }
-
+            
             // Access denied to the current page.
             if (!$forms_access[$record][$event_id][$instrument]) {
                 if (!$next_step_path) {
                     $arm = $event_id ? $Proj->eventInfo[$event_id]['arm_num'] : $this->getQueryParam('arm', 1);
                     $next_step_path = APP_PATH_WEBROOT . 'DataEntry/record_home.php?pid=' . $Proj->project_id . '&id=' . $record . '&arm=' . $arm;
                 }
-
+                
                 $this->redirect($next_step_path);
                 return;
             }
         }
-
+        
         $settings = array(
             'location' => $location,
             'formsAccess' => $forms_access,
             'nextStepPath' => $next_step_path,
         );
-
+        
         $this->setJsSettings($settings);
         $this->includeJs('js/frsl.js');
     }
-
+    
     /**
      * Checks for non authorized surveys and disables them for the current
      * request.
@@ -610,20 +612,20 @@ class ExternalModule extends AbstractExternalModule {
      */
     protected function overrideSurveysStatuses($record, $event_id) {
         global $Proj;
-
+        
         $forms_access = $this->getFormsAccessMatrix($event_id, $record);
-
+        
         foreach ($forms_access[$record][$event_id] as $form => $value) {
             if ($value || empty($Proj->forms[$form]['survey_id'])) {
                 continue;
             }
-
+            
             // Disabling surveys that are not allowed.
             $survey_id = $Proj->forms[$form]['survey_id'];
             $Proj->surveys[$survey_id]['survey_enabled'] = 0;
         }
     }
-
+    
     /**
      * Formats settings into a hierarchical key-value pair array.
      *
@@ -636,7 +638,7 @@ class ExternalModule extends AbstractExternalModule {
      */
     function getFormattedSettings($project_id = null) {
         $settings = $this->getConfig();
-
+        
         if ($project_id) {
             $settings = $settings['project-settings'];
             $values = ExternalModules::getProjectSettingsAsArray($this->PREFIX, $project_id);
@@ -645,10 +647,10 @@ class ExternalModule extends AbstractExternalModule {
             $settings = $settings['system-settings'];
             $values = ExternalModules::getSystemSettingsAsArray($this->PREFIX);
         }
-
+        
         return $this->_getFormattedSettings($settings, $values);
     }
-
+    
     /**
      * Gets URL query parameter.
      *
@@ -664,7 +666,7 @@ class ExternalModule extends AbstractExternalModule {
     function getQueryParam($param, $default = null) {
         return empty($_GET[$param]) ? $default : REDCap::escapeHtml($_GET[$param]);
     }
-
+    
     /**
      * Redirects user to the given URL.
      *
@@ -681,10 +683,10 @@ class ExternalModule extends AbstractExternalModule {
             // Redirect using PHP.
             header('Location: ' . $url);
         }
-
+        
         $this->exitAfterHook();
     }
-
+    
     /**
      * Includes a local JS file.
      *
@@ -694,7 +696,7 @@ class ExternalModule extends AbstractExternalModule {
     protected function includeJs($path) {
         echo '<script src="' . $this->getUrl($path) . '"></script>';
     }
-
+    
     /**
      * Includes a local CSS file.
      *
@@ -704,7 +706,7 @@ class ExternalModule extends AbstractExternalModule {
     protected function includeCss($path) {
         echo '<link rel="stylesheet" href="' . $this->getUrl($path) . '">';
     }
-
+    
     /**
      * Sets JS settings.
      *
@@ -714,13 +716,13 @@ class ExternalModule extends AbstractExternalModule {
     protected function setJsSettings($settings) {
         echo '<script>formRenderSkipLogic = ' . json_encode($settings) . ';</script>';
     }
-
+    
     /**
      * Gets Piping helper buttons.
      */
     protected function getPipingHelperButtons() {
         global $lang;
-
+        
         $this->includeCss('css/piping-helper.css');
         $buttons = array(
             'green' => array(
@@ -732,50 +734,50 @@ class ExternalModule extends AbstractExternalModule {
                 'contents' => RCView::img(array('src' => APP_PATH_IMAGES . 'pipe.png')) . $lang['info_41'],
             ),
         );
-
+        
         $output = '';
         foreach ($buttons as $color => $btn) {
             $output .= RCView::button(array('class' => 'btn btn-xs btn-rc' . $color . ' btn-rc' . $color . '-light', 'onclick' => $btn['callback'] . '(); return false;'), $btn['contents']);
         }
-
+        
         $output .= RCView::br() . RCView::a(array('href' => 'javascript:;', 'onclick' => 'helpPopup("ss78");'), $lang['design_165']);
         return RCView::br() . RCView::span(array('class' => 'frsl-piping-helper'), $output);
     }
-
+    
     /**
      * Auxiliary function for getFormattedSettings().
      */
     protected function _getFormattedSettings($settings, $values, $inherited_deltas = array()) {
         $formatted = array();
-
+        
         foreach ($settings as $setting) {
             $key = $setting['key'];
             $value = $values[$key]['value'];
-
+            
             foreach ($inherited_deltas as $delta) {
                 $value = $value[$delta];
             }
-
+            
             if ($setting['type'] == 'sub_settings') {
                 $deltas = array_keys($value);
                 $value = array();
-
+                
                 foreach ($deltas as $delta) {
                     $sub_deltas = array_merge($inherited_deltas, array($delta));
                     $value[$delta] = $this->_getFormattedSettings($setting['sub_settings'], $values, $sub_deltas);
                 }
-
+                
                 if (empty($setting['repeatable'])) {
                     $value = $value[0];
                 }
             }
-
+            
             $formatted[$key] = $value;
         }
-
+        
         return $formatted;
     }
-
+    
     /**
      * Auxiliary function to calculate condition.
      */
@@ -792,7 +794,7 @@ class ExternalModule extends AbstractExternalModule {
             case '<>':
                 return $a !== $b;
         }
-
+        
         return $a === $b;
     }
 }
