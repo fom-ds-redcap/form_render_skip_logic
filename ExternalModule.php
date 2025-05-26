@@ -6,7 +6,6 @@
 
 namespace FormRenderSkipLogic\ExternalModule;
 
-use Calculate;
 use ExternalModules\AbstractExternalModule;
 use ExternalModules\ExternalModules;
 use Form;
@@ -379,7 +378,7 @@ class ExternalModule extends AbstractExternalModule {
                         // it properly.
                         $logic = str_replace("''", '[' . $fake_field . ']', $logic);
                         
-                        $logic = Calculate::formatCalcToPHP($logic, $Proj);
+                        $logic = LogicTester::formatLogicToPHP($logic, $Proj);
                         $logic = LogicTester::logicPrependEventName($logic, $events_names[$event_id], $Proj = $Proj);
                         
                         $instance_data = [];
