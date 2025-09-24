@@ -32,33 +32,31 @@ function getQueryParameters(url, click) {
 }
 
 /**
- * Adds a repeat event, but disables all target forms affected by to start
+ * Adds a repeat event, but disables all target forms affected by the module to start
  */
 function gridAddRepeatingEventDisabled(ob) {    
-    // Add repeat event as normal
-    gridAddRepeatingEvent(ob);
+    
+    // Build an array of enabled forms
+    var enabledForms = [];
 
-    // Disable forms
     var index = $(ob).parentsUntil('th').parent().index();
     var link;
     $('#event_grid_table > tbody > tr').each(function(){  
         // Find cell
-        link = $('td:eq(' + (index+1) +') > a', this);
+        link = $('td:eq(' + (index) +') > a', this);
         if (link.length == 1) {
             var params = getQueryParameters(link.attr('href'),link.attr('onclick'));
             params.id = params.id.replace(/\+/g,' ');
 
-            if (formRenderSkipLogic.formsAccess.targetForms[params.event_id].includes(params.page) && 
-                !formRenderSkipLogic.formsAccess[params.id][params.event_id][params.page]['all']) {
-                try {
-                    link.css('pointer-events', 'none');
-                    link.css('opacity', '.1');
-                } catch (err) {
-                    console.log(err);
-                }
+            if (!formRenderSkipLogic.formsAccess.targetForms[params.event_id].includes(params.page) || 
+                formRenderSkipLogic.formsAccess[params.id][params.event_id][params.page]['all']) {
+                enabledForms.push(params.page);
             }
         }
     });
+
+    // Add repeat event as normal
+    gridAddRepeatingEvent(ob, enabledForms);
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -67,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
     switch (formRenderSkipLogic.location) {
         case 'data_entry_form':
             overrideNextFormButtonsRedirect();
-            $links = $('.rc-form-menu-item a');
+            $links = $('.formMenuList a');
             break;
         case 'record_home':
             overrideAddNewInstanceButton();
@@ -158,35 +156,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     /**
-     * Adds a repeat event, but disables all forms affected by the module to start
-     */
-    function gridAddRepeatingEventDisabled(ob) {    
-        // Add repeat event as normal
-        gridAddRepeatingEvent(ob);
-
-        // Disable forms
-
-        var cell;
-
-        // Get current instance
-        var newInstance = $(ob).attr('instance')*1 + 2;
-
-        $('#event_grid_table > tbody > tr').each(function(){  
-            // Find cell
-            cell = $('td:eq('+newInstance+')', this);
-            try {
-                disableForm(cell);
-            } catch (err) {
-                console.log(err);
-            }
-        });
-    }
-
-    /**
      * Overrides default functionality for adding repeat events
      */
     function overrideAddNewInstanceButton() {
-        $('.btnAddRptEv').each(function () {
+        $('.divBtnAddRptEv > button').each(function () {
             if ($(this).attr('event_id')) {
                 $(this).attr('onclick', 'gridAddRepeatingEventDisabled(this)');
             }
