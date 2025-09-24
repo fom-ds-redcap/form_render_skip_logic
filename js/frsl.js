@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
     switch (formRenderSkipLogic.location) {
         case 'data_entry_form':
             overrideNextFormButtonsRedirect();
-            $links = $('.formMenuList a');
+            $links = $('.rc-form-menu-item a');
             break;
         case 'record_home':
             overrideAddNewInstanceButton();
